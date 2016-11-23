@@ -56,45 +56,14 @@ module.exports = function(app,express){
 	 });
 
 		
+
+
 api.post('/login', function(req, res) {
-
-		User.findOne({ 
-			username: req.body.username
-		}).select('password').exec(function(err, user) {
-
-			if(err) throw err;
-
-			if(!user) {
-
-				res.send({ message: "User doenst exist"});
-			} else if(user){ 
-
-				var validPassword = user.comparePassword(req.body.password);
-
-				if(!validPassword) {
-					res.send({ message: "Invalid Password"});
-				} else {
-
-					///// token
-					var token = createToken(user);
-
-					res.json({
-						success: true,
-						message: "Successfuly login!",
-						token: token
-					});
-				}
-			}
-		});
-	});
-
-
-api.post('/login1', function(req, res) {
 
 		User.findOne({ 
 			username: req.body.username,
 			password:req.body.password
-		}).select('password').exec(function(err, user) {
+		}).exec(function(err, user) {
 
 			if(err) throw err;
 
@@ -119,7 +88,34 @@ api.post('/login1', function(req, res) {
 	});
 
 
+	api.use(function(req,res,next){
+		console.log("Somebody Just Came to Our App!");
+		
+		var token = req.body.token || req.param('token')|| req.header['x-access-token'];
+		console.log(token);
+		// check if token exists
 
+		if(token){
+			jsonwebtoken.verify(token,secretKey,function(err,decoded){
+				if(err){
+					res.status(403).send({success:false,message:"Failed to Authenticate User"});
+	 			}else{
+					//
+
+					req.decoded=decoded;
+					next();
+				}
+			});
+		}else{
+			res.status(403).send({success:false,message:"No Token Provided"});
+		}
+	});
+
+	api.get('/',function(req,res){
+
+		res.json('Hello World');
+	
+	});
 	
 	 return api
 }
