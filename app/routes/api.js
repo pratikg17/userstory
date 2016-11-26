@@ -91,7 +91,7 @@ api.post('/login', function(req, res) {
 	api.use(function(req,res,next){
 		console.log("Somebody Just Came to Our App!");
 		
-		var token = req.body.token || req.param('token')|| req.header['x-access-token'];
+		var token = req.body.token || req.param('token')|| req.headers['x-access-token'];
 		console.log(token);
 		// check if token exists
 
@@ -115,7 +115,7 @@ api.post('/login', function(req, res) {
 
 		res.json('Hello World');
 	
-	});
+	}); 
 	
 	 return api
 }
