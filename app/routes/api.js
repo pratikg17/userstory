@@ -145,6 +145,11 @@ api.post('/login', function(req, res) {
 				});
 			});
 
+		api.get('/me',function(req,res){
+			res.json(req.decoded);
+			
+
+		});
 
 	 return api
 }
